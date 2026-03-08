@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>智动健身助手 · 手机端</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="mobile-page">
+      <header class="mobile-header">
+        <div class="mobile-header-left">
+          <span class="mobile-badge">Mobile</span>
+          <span class="mobile-title">智动健身助手 · 手机端</span>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <button class="theme-toggle" id="theme-toggle" title="切换主题" style="padding: 6px 12px; font-size: 0.8rem;">
+            <span class="theme-icon" id="theme-icon">🌙</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="mobile-main">
+        <div class="mobile-app-header">
+          <div class="mobile-avatar">Z</div>
+          <div>
+            <div class="mobile-app-name">智动健身助手</div>
+            <div class="mobile-subtitle">您的专属私教</div>
+          </div>
+        </div>
+
+        <!-- 顶部导航 -->
+        <div class="mobile-tab-bar">
+          <button class="mobile-tab mobile-tab--active" data-page="form">方案生成</button>
+          <button class="mobile-tab" data-page="chat">AI 问答</button>
+          <button class="mobile-tab" data-page="theme" id="mobile-theme-tab">🌙</button>
+        </div>
+
+        <!-- 页面 1: 表单 -->
+        <div id="page-form" class="mobile-page-content">
+          <section class="card">
+            <h2>填写你的基本信息</h2>
+            <form id="plan-form" class="form">
+              <div class="form-grid">
+                <div class="form-field">
+                  <label for="age">年龄</label>
+                  <input type="number" id="age" min="10" max="80" placeholder="例如：28" />
+                </div>
+
+                <div class="form-field">
+                  <label for="gender">性别</label>
+                  <select id="gender">
+                    <option value="">选择</option>
+                    <option value="male">男</option>
+                    <option value="female">女</option>
+                    <option value="other">其他/不方便透露</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="experience">训练经验</label>
+                  <select id="experience">
+                    <option value="">选择</option>
+                    <option value="beginner">0-6 个月（新手）</option>
+                    <option value="intermediate">6-24 个月（进阶）</option>
+                    <option value="advanced">2 年以上（高阶）</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="daysPerWeek">每周可训练天数</label>
+                  <select id="daysPerWeek">
+                    <option value="">选择</option>
+                    <option value="2">2 天</option>
+                    <option value="3">3 天</option>
+                    <option value="4">4 天</option>
+                    <option value="5">5 天</option>
+                    <option value="6">6 天</option>
+                    <option value="7">7 天</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="goal">主要健身目标</label>
+                  <select id="goal">
+                    <option value="">选择</option>
+                    <option value="fat-loss">减脂</option>
+                    <option value="muscle-gain">增肌</option>
+                    <option value="shape">塑形</option>
+                    <option value="health">综合健康</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="place">主要训练场景</label>
+                  <select id="place">
+                    <option value="">选择</option>
+                    <option value="gym">健身房</option>
+                    <option value="home">家庭/公园</option>
+                    <option value="mixed">两者结合</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label for="notes">补充说明（可选）</label>
+                <textarea id="notes" rows="2" placeholder="例如：膝盖以前受过伤..."></textarea>
+              </div>
+
+              <button type="submit" class="btn-primary">生成方案</button>
+            </form>
+          </section>
+
+          <section class="results-grid" style="margin-top: 10px;">
+            <article class="card result-card">
+              <h2>个性化训练建议</h2>
+              <div id="plan-basic" class="result-content muted">
+                填写信息并点击"生成方案"后，这里会展示基础训练建议。
+              </div>
+            </article>
+
+            <article class="card result-card">
+              <h2>一周训练安排示例</h2>
+              <div id="plan-weekly" class="result-content muted">
+                将根据你的目标和训练频率自动生成。
+              </div>
+            </article>
+          </section>
+        </div>
+
+        <!-- 页面 2: AI 问答 -->
+        <div id="page-chat" class="mobile-page-content" style="display: none; flex: 1; flex-direction: column;">
+          <div class="mobile-chat-container" id="mobile-chat-container">
+            <div class="mobile-message assistant">
+              你好！我是你的智动健身助手 🤖💪
+
+我可以帮你解答各种健身问题，有什么我可以帮你的吗？
+            </div>
+          </div>
+
+          <div class="mobile-chat-input-area">
+            <input type="text" class="mobile-chat-input" id="mobile-chat-input" placeholder="输入你的健身问题..." />
+            <button class="mobile-chat-send" id="mobile-chat-send">发送</button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // API 配置
+      const API_BASE_URL = 'http://localhost:5000';
+
+      // 主题切换功能
+      (function() {
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const mobileThemeTab = document.getElementById('mobile-theme-tab');
+
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        function applyTheme(theme) {
+          if (theme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            themeIcon.textContent = '☀️';
+            if (mobileThemeTab) mobileThemeTab.textContent = '☀️';
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+            themeIcon.textContent = '🌙';
+            if (mobileThemeTab) mobileThemeTab.textContent = '🌙';
+          }
+          localStorage.setItem('theme', theme);
+        }
+
+        applyTheme(currentTheme);
+
+        themeToggle.addEventListener('click', () => {
+          currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+          applyTheme(currentTheme);
+        });
+
+        if (mobileThemeTab) {
+          mobileThemeTab.addEventListener('click', () => {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(currentTheme);
+          });
+        }
+      })();
+
+      // 页面切换
+      const tabs = document.querySelectorAll('.mobile-tab[data-page]');
+      const pageForm = document.getElementById('page-form');
+      const pageChat = document.getElementById('page-chat');
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const page = tab.dataset.page;
+          if (page === 'theme') return;
+
+          tabs.forEach(t => t.classList.remove('mobile-tab--active'));
+          tab.classList.add('mobile-tab--active');
+
+          if (page === 'form') {
+            pageForm.style.display = 'block';
+            pageChat.style.display = 'none';
+          } else if (page === 'chat') {
+            pageForm.style.display = 'none';
+            pageChat.style.display = 'flex';
+          }
+        });
+      });
+
+      // AI 聊天功能
+      const chatContainer = document.getElementById('mobile-chat-container');
+      const chatInput = document.getElementById('mobile-chat-input');
+      const chatSend = document.getElementById('mobile-chat-send');
+
+      let userInfo = {};
+      try {
+        const savedInfo = localStorage.getItem('fitnessUserInfo');
+        if (savedInfo) userInfo = JSON.parse(savedInfo);
+      } catch (e) {}
+
+      function addMessage(content, isUser = false) {
+        const msg = document.createElement('div');
+        msg.className = `phone-message ${isUser ? 'user' : 'assistant'}`;
+        msg.textContent = content;
+        chatContainer.appendChild(msg);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
+
+      async function sendMessage() {
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        addMessage(message, true);
+        chatInput.value = '';
+
+        const loadingMsg = document.createElement('div');
+        loadingMsg.className = 'phone-message assistant';
+        loadingMsg.textContent = '思考中...';
+        loadingMsg.id = 'loading-msg';
+        chatContainer.appendChild(loadingMsg);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message, userInfo })
+          });
+
+          const data = await response.json();
+          document.getElementById('loading-msg').remove();
+
+          if (data.success) {
+            addMessage(data.response);
+          } else {
+            addMessage('抱歉，请稍后再试。');
+          }
+        } catch (error) {
+          document.getElementById('loading-msg').remove();
+          addMessage('抱歉，无法连接到服务器，请稍后再试。');
+        }
+      }
+
+      chatSend.addEventListener('click', sendMessage);
+      chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+      });
+    </script>
+    <script src="app.js"></script>
+    <script src="mobile.js"></script>
+  </body>
+</html>

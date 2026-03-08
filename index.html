@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>智动健身助手 - AI训练方案生成</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="app-header">
+        <div>
+          <h1>智动健身助手</h1>
+          <p class="subtitle">您的专属私教</p>
+        </div>
+        <button class="theme-toggle" id="theme-toggle" title="切换主题">
+          <span class="theme-icon" id="theme-icon">🌙</span>
+          <span id="theme-text">深色</span>
+        </button>
+      </header>
+
+      <nav class="nav-links">
+        <a href="index.html" class="nav-link active">训练方案生成</a>
+        <a href="ai-chat.html" class="nav-link">AI 智能问答</a>
+      </nav>
+
+      <main class="app-main">
+        <section class="card">
+          <h2>填写你的基本信息</h2>
+          <form id="plan-form" class="form">
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="age">年龄</label>
+                <input type="number" id="age" min="10" max="80" placeholder="例如：28" />
+              </div>
+
+              <div class="form-field">
+                <label for="gender">性别</label>
+                <select id="gender">
+                  <option value="">选择</option>
+                  <option value="male">男</option>
+                  <option value="female">女</option>
+                  <option value="other">其他/不方便透露</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label for="experience">训练经验</label>
+                <select id="experience">
+                  <option value="">选择</option>
+                  <option value="beginner">0-6 个月（新手）</option>
+                  <option value="intermediate">6-24 个月（进阶）</option>
+                  <option value="advanced">2 年以上（高阶）</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label for="daysPerWeek">每周可训练天数</label>
+                <select id="daysPerWeek">
+                  <option value="">选择</option>
+                  <option value="2">2 天</option>
+                  <option value="3">3 天</option>
+                  <option value="4">4 天</option>
+                  <option value="5">5 天</option>
+                  <option value="6">6 天</option>
+                  <option value="7">7 天</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label for="goal">主要健身目标</label>
+                <select id="goal">
+                  <option value="">选择</option>
+                  <option value="fat-loss">减脂</option>
+                  <option value="muscle-gain">增肌</option>
+                  <option value="shape">塑形</option>
+                  <option value="health">综合健康</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label for="place">主要训练场景</label>
+                <select id="place">
+                  <option value="">选择</option>
+                  <option value="gym">健身房</option>
+                  <option value="home">家庭/公园</option>
+                  <option value="mixed">两者结合</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="notes">补充说明（可选）</label>
+              <textarea
+                id="notes"
+                rows="3"
+                placeholder="例如：膝盖以前受过伤，想重点练上半身；习惯晚上训练等"
+              ></textarea>
+            </div>
+
+            <button type="submit" class="btn-primary">生成方案</button>
+          </form>
+        </section>
+
+        <section class="results-grid">
+          <article class="card result-card">
+            <h2>个性化训练建议</h2>
+            <div id="plan-basic" class="result-content muted">
+              填写信息并点击“生成方案”后，这里会展示基础训练建议。
+            </div>
+          </article>
+
+          <article class="card result-card">
+            <h2>一周训练安排示例</h2>
+            <div id="plan-weekly" class="result-content muted">
+              将根据你的目标和训练频率自动生成。
+            </div>
+          </article>
+
+        </section>
+      </main>
+
+    </div>
+
+    <script>
+      // 检测设备类型，如果是手机则跳转到手机版
+      (function() {
+        // 检查是否已经访问过手机版（避免循环跳转）
+        if (sessionStorage.getItem('deviceChecked') === 'true') {
+          return;
+        }
+        sessionStorage.setItem('deviceChecked', 'true');
+
+        // 检测是否为移动设备
+        const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile/i.test(navigator.userAgent);
+
+        // 检测屏幕宽度（考虑横屏和竖屏）
+        const screenWidth = Math.min(window.screen.width, window.screen.height);
+        const isSmallScreen = screenWidth < 768 || window.innerWidth < 768;
+
+        // 检测是否为触摸设备
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+        // 如果是移动设备或小屏幕设备，跳转到手机版
+        if (isMobileDevice || (isSmallScreen && isTouchDevice)) {
+          window.location.href = 'mobile.html';
+        }
+      })();
+
+      // 主题切换功能
+      (function() {
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const themeText = document.getElementById('theme-text');
+
+        // 从 localStorage 读取主题设置
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        // 应用主题
+        function applyTheme(theme) {
+          if (theme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            themeIcon.textContent = '☀️';
+            themeText.textContent = '浅色';
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+            themeIcon.textContent = '🌙';
+            themeText.textContent = '深色';
+          }
+          localStorage.setItem('theme', theme);
+        }
+
+        // 初始化主题
+        applyTheme(currentTheme);
+
+        // 切换主题
+        themeToggle.addEventListener('click', () => {
+          currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+          applyTheme(currentTheme);
+        });
+      })();
+    </script>
+    <script src="app.js"></script>
+  </body>
+</html>
+
